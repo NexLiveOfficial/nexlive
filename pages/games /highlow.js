@@ -1,8 +1,11 @@
 export default function HighLow() {
-  return <div style={{color:'#fff',textAlign:'center',padding:40}}>
-    <h1>High-Low (Solo Mode)</h1>
-    <p>Bet coins on High or Low. We’ll wire balances shortly.</p>
-    <a href="/dashboard" style={{color:'#9cf'}}>← Back</a>
-  </div>;
+  return (
+    <div style={{minHeight:"100vh",display:"grid",placeItems:"center",background:"#0a0a0a",color:"#fff"}}>
+      <div>
+        <h1>High-Low (Coming Soon)</h1>
+        <p>Bet high/low, win coins. Prototype next.</p>
+        <p><a href="/dashboard" style={{color:"#7db7ff"}}>← Back to Dashboard</a></p>
+      </div>
+    </div>
+  );
 }
-
