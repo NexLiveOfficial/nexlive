@@ -1,0 +1,120 @@
+:root{
+  --bg:#08090b;
+  --panel:#0e1014;
+  --panel-2:#12151b;
+  --text:#e6f0ff;
+  --muted:#8aa0c8;
+  --brand:#67b6ff;
+  --brand-2:#7b7bff;
+  --glow:0 0 30px rgba(103,182,255,.45), 0 0 8px rgba(123,123,255,.35);
+}
+
+*{box-sizing:border-box}
+html,body,#__next{height:100%}
+body{
+  margin:0;
+  background:
+    radial-gradient(60% 60% at 20% 20%, rgba(103,182,255,.12), transparent 60%),
+    radial-gradient(50% 50% at 80% 20%, rgba(123,123,255,.10), transparent 60%),
+    linear-gradient(180deg, #07080a, #0a0c11 35%, #07080a);
+  color:var(--text);
+  font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Inter, Arial, "Apple Color Emoji","Segoe UI Emoji";
+}
+
+.center {
+  min-height:100%;
+  display:grid;
+  place-items:center;
+  padding:24px;
+}
+
+.card{
+  width:min(720px, 96vw);
+  background:linear-gradient(180deg, var(--panel), var(--panel-2));
+  border:1px solid rgba(255,255,255,.08);
+  border-radius:22px;
+  padding:28px;
+  box-shadow:var(--glow);
+}
+
+.h1{
+  font-size:38px;
+  font-weight:800;
+  letter-spacing:.3px;
+  text-align:center;
+  margin:4px 0 10px;
+  text-shadow:0 2px 16px rgba(103,182,255,.25);
+}
+.sub{
+  text-align:center;
+  color:var(--muted);
+  margin:0 0 22px;
+  font-size:16px;
+}
+
+.row{
+  display:flex;
+  flex-wrap:wrap;
+  gap:12px;
+  justify-content:center;
+  margin:14px 0 8px;
+}
+
+.btn{
+  appearance:none;
+  border:none;
+  cursor:pointer;
+  padding:12px 18px;
+  border-radius:14px;
+  font-weight:700;
+  letter-spacing:.3px;
+  transition:transform .08s ease, box-shadow .2s ease, opacity .2s ease;
+  background:#161a22;
+  color:#eaf2ff;
+  border:1px solid rgba(255,255,255,.08);
+}
+.btn:hover{ transform:translateY(-1px); }
+
+.btnPrimary{
+  background:linear-gradient(135deg, var(--brand), var(--brand-2));
+  color:#05101b;
+  box-shadow:var(--glow);
+}
+
+.footer{
+  text-align:center;
+  opacity:.7;
+  margin-top:12px;
+  font-size:12px;
+}
+
+.form{
+  margin-top:16px;
+  display:grid;
+  gap:10px;
+}
+
+.input{
+  width:100%;
+  padding:12px 14px;
+  background:#0c1017;
+  border:1px solid rgba(255,255,255,.1);
+  border-radius:12px;
+  color:#e6f0ff;
+}
+.help{ color:var(--muted); font-size:13px; text-align:center; margin-top:4px; }
+
+.divider{
+  height:1px; width:100%;
+  background:linear-gradient(90deg, transparent, rgba(255,255,255,.12), transparent);
+  margin:18px 0 10px;
+}
+
+.badgeRow{ display:flex; gap:10px; justify-content:center; margin-top:10px; }
+.badge{
+  font-size:12px; color:#a9c0ff; padding:6px 10px;
+  border:1px solid rgba(255,255,255,.08); border-radius:999px;
+  background:rgba(103,182,255,.08);
+}
+
+.kb{ opacity:.65; font-size:12px; text-align:center; margin-top:8px; }
