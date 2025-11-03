@@ -1,81 +1,111 @@
-import { useState } from 'react'
-import { createClient } from '@supabase/supabase-js'
+import { useEffect, useState } from 'react';
+import { supabase } from '@/lib/supabaseClient';
 
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL,
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
-)
+export default function Landing() {
+  const [mode, setMode] = useState(null); // 'login' | 'signup' | 'demo'
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [msg, setMsg] = useState('');
 
-export default function Home() {
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
-  const [user, setUser] = useState(null)
-  const [message, setMessage] = useState('')
+  useEffect(() => {
+    // If already logged in, go straight to dashboard
+    supabase.auth.getSession().then(({ data }) => {
+      if (data?.session) window.location.href = '/dashboard';
+    });
+  }, []);
 
-  const handleSignUp = async (e) => {
-    e.preventDefault()
-    const { data, error } = await supabase.auth.signUp({ email, password })
-    if (error) setMessage(error.message)
-    else setMessage('Signup successful! Check your email.')
-  }
+  const signUp = async (e) => {
+    e.preventDefault();
+    setMsg('');
+    const { error } = await supabase.auth.signUp({ email, password });
+    if (error) return setMsg(error.message);
+    setMsg('Signup successful! Check your email to confirm.');
+  };
 
-  const handleLogin = async (e) => {
-    e.preventDefault()
-    const { data, error } = await supabase.auth.signInWithPassword({ email, password })
-    if (error) setMessage(error.message)
-    else setUser(data.user)
-  }
-
-  const handleLogout = async () => {
-    await supabase.auth.signOut()
-    setUser(null)
-    setMessage('You have logged out.')
-  }
+  const login = async (e) => {
+    e.preventDefault();
+    setMsg('');
+    const { error } = await supabase.auth.signInWithPassword({ email, password });
+    if (error) return setMsg(error.message);
+    window.location.href = '/dashboard';
+  };
 
   return (
-    <div style={{
-      backgroundColor: '#0a0a0a',
-      color: 'white',
-      height: '100vh',
-      display: 'flex',
-      flexDirection: 'column',
-      alignItems: 'center',
-      justifyContent: 'center',
-      fontFamily: 'sans-serif'
-    }}>
-      <h1>NexLive™ Login</h1>
-      {!user ? (
-        <form style={{ display: 'flex', flexDirection: 'column', width: '300px' }}>
-          <input
-            type="email"
-            placeholder="Email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            style={{ margin: '5px', padding: '10px', borderRadius: '5px' }}
-          />
-          <input
-            type="password"
-            placeholder="Password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            style={{ margin: '5px', padding: '10px', borderRadius: '5px' }}
-          />
-          <button onClick={handleSignUp} style={{ margin: '5px', padding: '10px' }}>
-            Sign Up
-          </button>
-          <button onClick={handleLogin} style={{ margin: '5px', padding: '10px' }}>
-            Login
-          </button>
-        </form>
-      ) : (
-        <>
-          <h3>Welcome, {user.email}</h3>
-          <button onClick={handleLogout} style={{ marginTop: '20px', padding: '10px' }}>
-            Logout
-          </button>
-        </>
-      )}
-      <p style={{ marginTop: '20px', color: '#09f' }}>{message}</p>
+    <div className="center">
+      <div className="card">
+        <h1 className="h1">NexLive™</h1>
+        <p className="sub">
+          <strong style={{color:'#a7c9ff'}}>Where Fans Meet Stars, Live</strong><br/>
+          Live meetups, Golden Tickets, fan marketplace, and the Passport that levels you up.
+        </p>
+
+        {/* main buttons row */}
+        <div className="row">
+          <button className="btn btnPrimary" onClick={() => setMode('login')}>Log In</button>
+          <button className="btn btnPrimary" onClick={() => setMode('signup')}>Sign Up</button>
+          <button className="btn" onClick={() => setMode('demo')}>Demo Mode</button>
+        </div>
+
+        {/* secondary buttons */}
+        <div className="row">
+          <button className="btn">🎫 Golden Tickets</button>
+          <button className="btn">🛍️ Fan Marketplace</button>
+          <button className="btn">🧭 Fan Passport XP</button>
+        </div>
+
+        {/* small badges like your prototype */}
+        <div className="badgeRow">
+          <div className="badge">Shortcuts: L = Login</div>
+          <div className="badge">G = Sign Up</div>
+          <div className="badge">D = Demo</div>
+        </div>
+
+        {/* forms zone */}
+        {mode && <div className="divider" />}
+
+        {mode === 'login' && (
+          <form className="form" onSubmit={login}>
+            <input className="input" type="email" placeholder="Email" value={email}
+                   onChange={(e)=>setEmail(e.target.value)} />
+            <input className="input" type="password" placeholder="Password" value={password}
+                   onChange={(e)=>setPassword(e.target.value)} />
+            <div className="row">
+              <button className="btn btnPrimary" type="submit">Enter NexLive</button>
+              <button className="btn" type="button" onClick={()=>setMode(null)}>Cancel</button>
+            </div>
+            <div className="help">Trouble logging in? Make sure you confirmed your email.</div>
+          </form>
+        )}
+
+        {mode === 'signup' && (
+          <form className="form" onSubmit={signUp}>
+            <input className="input" type="email" placeholder="Email" value={email}
+                   onChange={(e)=>setEmail(e.target.value)} />
+            <input className="input" type="password" placeholder="Create a password" value={password}
+                   onChange={(e)=>setPassword(e.target.value)} />
+            <div className="row">
+              <button className="btn btnPrimary" type="submit">Create Account</button>
+              <button className="btn" type="button" onClick={()=>setMode(null)}>Cancel</button>
+            </div>
+            <div className="help">You’ll receive a confirmation email to activate your account.</div>
+          </form>
+        )}
+
+        {mode === 'demo' && (
+          <div className="help">
+            Demo mode will preview the dashboards and games UI without saving data.
+            <div className="row" style={{marginTop:10}}>
+              <a className="btn btnPrimary" href="/dashboard">Open Demo</a>
+              <button className="btn" onClick={()=>setMode(null)}>Close</button>
+            </div>
+          </div>
+        )}
+
+        {msg && <p className="help" style={{color:'#89c6ff'}}>{msg}</p>}
+
+        <div className="footer">© {new Date().getFullYear()} NexLive™ • All rights reserved</div>
+      </div>
     </div>
-  )
+  );
 }
+
