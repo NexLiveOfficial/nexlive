@@ -13,6 +13,15 @@ export default function Landing() {
       if (data?.session) window.location.href = '/dashboard';
     });
   }, []);
+  useEffect(() => {
+  const onKey = (e) => {
+    if (e.key.toLowerCase() === 'l') setMode('login');
+    if (e.key.toLowerCase() === 'g') setMode('signup');
+    if (e.key.toLowerCase() === 'd') setMode('demo');
+  };
+  window.addEventListener('keydown', onKey);
+  return () => window.removeEventListener('keydown', onKey);
+}, []);
 
   const signUp = async (e) => {
     e.preventDefault();
