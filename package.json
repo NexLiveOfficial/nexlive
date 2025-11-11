@@ -2,38 +2,16 @@
   "name": "nexlive",
   "version": "1.0.0",
   "private": true,
-  "type": "module",
   "scripts": {
-    "dev": "next dev -p 3000",
+    "dev": "next dev",
     "build": "next build",
-    "start": "next start -p 3000"
+    "start": "next start"
   },
   "dependencies": {
-    "@supabase/supabase-js": "2.45.4",
-    "next": "14.2.4",
+    "next": "14.2.3",
     "react": "18.2.0",
-    "react-dom": "18.2.0"
-  }
-}
-
-  "devDependencies": {
-    "eslint": "8.57.0",
-    "eslint-config-next": "14.2.4"
+    "react-dom": "18.2.0",
+    "@supabase/supabase-js": "^2.48.0"
   },
-  "engines": {
-    "node": ">=18.0.0"
-  },
-  "keywords": [
-    "NexLive",
-    "Fan",
-    "Creator",
-    "Platform",
-    "Supabase",
-    "Vercel",
-    "NextJS"
-  ],
-  "author": "NexLive Official Team",
-  "license": "MIT",
-  "description": "NexLive™ — Where Fans Meet Stars, Live. Powered by Next.js, Supabase, and Vercel."
+  "devDependencies": {}
 }
-
