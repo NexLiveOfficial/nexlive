@@ -117,4 +117,18 @@ export default function Landing() {
     </div>
   );
 }
+export default function Home() {
+  return (
+    <main style={{minHeight:'100vh',display:'grid',placeItems:'center',background:'#0b0b0e',color:'#fff'}}>
+      <div>
+        <h1 style={{textAlign:'center',color:'#9ad0ff'}}>NexLive™</h1>
+        <p style={{textAlign:'center'}}>Welcome! Choose an option:</p>
+        <p style={{textAlign:'center'}}>
+          <a href="/signup" style={{marginRight:16}}>Sign Up</a>
+          <a href="/login">Log In</a>
+        </p>
+      </div>
+    </main>
+  );
+}
 
