@@ -1,6 +1,6 @@
 // pages/index.js
 import { useState, useEffect } from 'react';
-import { supabase } from './lib/supabaseClient';
+import supabase from '../lib/supabaseClient';
 
 export default function Home() {
   const [mode, setMode] = useState(null); // 'login' | 'signup' | 'demo'
