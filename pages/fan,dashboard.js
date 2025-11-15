@@ -1,109 +1,117 @@
-import { useEffect, useState } from "react";
-import { supabase } from "../lib/supabaseClient";
+// pages/fan_dashboard.js
 
-export default function Dashboard() {
-  const [session, setSession] = useState(null);
-  const [profile, setProfile] = useState(null);
+import { useEffect, useState } from 'react';
+import { supabase } from './lib/supabaseClient';
+
+export default function FanDashboard() {
+  const [userEmail, setUserEmail] = useState('');
   const [loading, setLoading] = useState(true);
-  const [msg, setMsg] = useState("");
 
-  // Get current session
+  // Fake numbers for now – just UI
+  const [coins, setCoins] = useState(250);
+  const [wishPoints, setWishPoints] = useState(40);
+  const [level, setLevel] = useState(3);
+
   useEffect(() => {
-    supabase.auth.getSession().then(({ data }) => setSession(data.session));
-  }, []);
+    // Get logged-in user, otherwise kick back to login
+    const loadUser = async () => {
+      const {
+        data: { user },
+        error,
+      } = await supabase.auth.getUser();
 
-  // Load / upsert user row, then fetch balances
-  useEffect(() => {
-    const run = async () => {
-      if (!session) return;
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return;
+      if (error || !user) {
+        // Not logged in → go back to landing/login
+        window.location.href = '/';
+        return;
+      }
 
-      // Ensure a row exists in "users" for this auth user
-      await supabase.from("users").upsert(
-        { id: user.id, email: user.email, role: "fan" },
-        { onConflict: "id" }
-      );
-
-      const { data, error } = await supabase
-        .from("users")
-        .select("email, username, coins, wish_points, role, created_at")
-        .eq("id", user.id)
-        .single();
-
-      if (error) setMsg(error.message);
-      else setProfile(data);
+      setUserEmail(user.email || '');
       setLoading(false);
     };
-    run();
-  }, [session]);
 
-  const logout = async () => {
-    await supabase.auth.signOut();
-    window.location.href = "/";
-  };
+    loadUser();
+  }, []);
 
-  if (!session) {
+  if (loading) {
     return (
-      <main style={s.wrap}>
-        <h1 style={s.h1}>NexLive™</h1>
-        <p>Please <a href="/">log in</a> to view your dashboard.</p>
-      </main>
+      <div className="center">
+        <div className="card">
+          <h1 className="h1">NexLive™ Fan Dashboard</h1>
+          <p className="sub">Loading your account...</p>
+        </div>
+      </div>
     );
   }
 
   return (
-    <main style={s.wrap}>
-      <h1 style={s.h1}>Fan Dashboard</h1>
+    <div className="dashboard">
+      <header className="dashHeader">
+        <div>
+          <h1 className="h1">NexLive™ Fan Dashboard</h1>
+          <p className="sub">Welcome back, {userEmail}</p>
+        </div>
+        <button
+          className="btn"
+          onClick={async () => {
+            await supabase.auth.signOut();
+            window.location.href = '/';
+          }}
+        >
+          Log Out
+        </button>
+      </header>
 
-      {loading && <p>Loading...</p>}
+      <section className="statsRow">
+        <div className="statCard">
+          <h2>Coins</h2>
+          <p className="bigNumber">{coins}</p>
+          <button
+            className="btn btnPrimary"
+            onClick={() => setCoins((c) => c + 20)}
+          >
+            + Buy 20 Coins (demo)
+          </button>
+        </div>
 
-      {profile && (
-        <>
-          <div style={s.cards}>
-            <div style={s.card}>
-              <div style={s.label}>Coins</div>
-              <div style={s.value}>{profile.coins ?? 0}</div>
-            </div>
-            <div style={s.card}>
-              <div style={s.label}>Wish Points</div>
-              <div style={s.value}>{profile.wish_points ?? 0}</div>
-            </div>
-            <div style={s.card}>
-              <div style={s.label}>Status</div>
-              <div style={s.value}>{profile.role || "fan"}</div>
-            </div>
-          </div>
+        <div className="statCard">
+          <h2>Wish Points</h2>
+          <p className="bigNumber">{wishPoints}</p>
+          <p className="smallText">Earned from Wishes & Golden Tickets</p>
+        </div>
 
-          <div style={s.actions}>
-            <a href="/games/whack" style={s.btn}>▶ Play Whack-a-Wish</a>
-            <a href="/games/highlow" style={s.btn}>♠ Play High-Low</a>
-            <a href="/store" style={s.btn}>🛍️ Rewards Store</a>
-          </div>
-        </>
-      )}
+        <div className="statCard">
+          <h2>Fan Level</h2>
+          <p className="bigNumber">LVL {level}</p>
+          <p className="smallText">Passport XP status</p>
+        </div>
+      </section>
 
-      {msg && <p style={{color:"#7db7ff"}}>{msg}</p>}
+      <section className="panelRow">
+        <div className="panel">
+          <h2>Wish Button</h2>
+          <p className="smallText">
+            Use your coins to request live meetups, shoutouts, Q&amp;As and more.
+          </p>
+          <button className="btn btnPrimary">Open Wish Panel (soon)</button>
+        </div>
 
-      <button onClick={logout} style={s.outline}>Logout</button>
-    </main>
+        <div className="panel">
+          <h2>Golden Tickets</h2>
+          <p className="smallText">
+            Track your entries for VIP meet-and-greets and exclusive events.
+          </p>
+          <button className="btn">View Tickets (demo)</button>
+        </div>
+
+        <div className="panel">
+          <h2>Fan Marketplace</h2>
+          <p className="smallText">
+            Buy and sell fan merch, collectibles and creator drops.
+          </p>
+          <button className="btn">Enter Marketplace (demo)</button>
+        </div>
+      </section>
+    </div>
   );
 }
-
-const s = {
-  wrap:{minHeight:"100vh",background:"#0a0a0a",color:"#fff",display:"flex",flexDirection:"column",
-        alignItems:"center",justifyContent:"center",gap:18,fontFamily:"Inter,system-ui,sans-serif",
-        padding:24,textAlign:"center"},
-  h1:{margin:0,textShadow:"0 2px 16px rgba(103,182,255,.25)"},
-  cards:{display:"flex",gap:16,flexWrap:"wrap",justifyContent:"center"},
-  card:{background:"rgba(255,255,255,.04)",border:"1px solid rgba(255,255,255,.09)",
-        borderRadius:14,padding:"16px 22px",minWidth:140},
-  label:{opacity:.7,fontSize:12,letterSpacing:1,textTransform:"uppercase"},
-  value:{fontSize:28,fontWeight:800,marginTop:6},
-  actions:{display:"flex",gap:12,flexWrap:"wrap",justifyContent:"center",marginTop:16},
-  btn:{padding:"10px 14px",borderRadius:12,background:"#fff",color:"#000",textDecoration:"none",fontWeight:700},
-  outline:{marginTop:16,padding:"10px 14px",borderRadius:12,background:"transparent",
-           color:"#fff",border:"1px solid rgba(255,255,255,.25)"}
-};
-
-        

@@ -1,8 +1,10 @@
+// pages/index.js
+
 import { useState, useEffect } from 'react';
 import { supabase } from './lib/supabaseClient';
 
-export default function Home() {
-  const [mode, setMode] = useState('login'); // 'login' | 'signup' | 'demo'
+export default function Landing() {
+  const [mode, setMode] = useState(null); // 'login' | 'signup' | 'demo'
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [msg, setMsg] = useState('');
@@ -22,11 +24,12 @@ export default function Home() {
       if (k === 'g') setMode('signup');
       if (k === 'd') setMode('demo');
     };
+
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
   }, []);
 
-  const signup = async (e) => {
+  const signUp = async (e) => {
     e.preventDefault();
     setMsg('');
     const { error } = await supabase.auth.signUp({ email, password });
@@ -43,64 +46,45 @@ export default function Home() {
   };
 
   return (
-    <main
-      style={{
-        minHeight: '100vh',
-        display: 'grid',
-        placeItems: 'center',
-        background: '#050b16',
-        color: '#f5f5f5',
-        fontFamily: 'system-ui, sans-serif',
-      }}
-    >
-      <div
-        style={{
-          padding: '32px 40px',
-          borderRadius: '16px',
-          background: 'rgba(0,0,0,0.7)',
-          boxShadow: '0 0 40px rgba(0,0,0,0.8)',
-          width: '90%',
-          maxWidth: '420px',
-        }}
-      >
-        <h1 style={{ textAlign: 'center', marginBottom: 8 }}>NexLive™ Login</h1>
-        <p style={{ textAlign: 'center', fontSize: 14, color: '#9ad0ff', marginBottom: 16 }}>
-          Where Fans Meet Stars, Live.
+    <div className="center">
+      <div className="card">
+        <h1 className="h1">NexLive™</h1>
+        <p className="sub">
+          <strong style={{ color: '#a7c9ff' }}>Where Fans Meet Stars, Live</strong>
+          <br />
+          Live meetups, Golden Tickets, fan marketplace, and the Passport that levels you up.
         </p>
 
-        {/* main buttons */}
-        <div style={{ display: 'flex', gap: 8, marginBottom: 12 }}>
-          <button
-            style={{ flex: 1 }}
-            className="btn btnPrimary"
-            onClick={() => setMode('login')}
-          >
+        {/* main buttons row */}
+        <div className="row">
+          <button className="btn btnPrimary" onClick={() => setMode('login')}>
             Log In
           </button>
-          <button
-            style={{ flex: 1 }}
-            className="btn btnPrimary"
-            onClick={() => setMode('signup')}
-          >
+          <button className="btn btnPrimary" onClick={() => setMode('signup')}>
             Sign Up
           </button>
-          <button
-            style={{ flex: 1 }}
-            className="btn btnPrimary"
-            onClick={() => setMode('demo')}
-          >
-            Demo
+          <button className="btn" onClick={() => setMode('demo')}>
+            Demo Mode
           </button>
         </div>
 
-        {/* shortcut badges */}
-        <div style={{ display: 'flex', gap: 8, marginBottom: 16, fontSize: 12 }}>
-          <div style={{ flex: 1 }}>Shortcut: L = Login</div>
-          <div style={{ flex: 1 }}>G = Sign Up</div>
-          <div style={{ flex: 1 }}>D = Demo</div>
+        {/* secondary buttons */}
+        <div className="row">
+          <button className="btn">🎫 Golden Tickets</button>
+          <button className="btn">🛍️ Fan Marketplace</button>
+          <button className="btn">🧭 Fan Passport XP</button>
         </div>
 
-        {/* forms */}
+        {/* small badges like your prototype */}
+        <div className="badgeRow">
+          <div className="badge">Shortcuts: L = Login</div>
+          <div className="badge">G = Sign Up</div>
+          <div className="badge">D = Demo</div>
+        </div>
+
+        {/* forms zone */}
+        {mode && <div className="divider" />}
+
         {mode === 'login' && (
           <form className="form" onSubmit={login}>
             <input
@@ -109,7 +93,6 @@ export default function Home() {
               placeholder="Email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              required
             />
             <input
               className="input"
@@ -117,35 +100,27 @@ export default function Home() {
               placeholder="Password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              required
             />
-            <div style={{ display: 'flex', gap: 8, marginTop: 12 }}>
+            <div className="row">
               <button className="btn btnPrimary" type="submit">
                 Enter NexLive
               </button>
-              <button
-                className="btn"
-                type="button"
-                onClick={() => setMode(null)}
-              >
+              <button className="btn" type="button" onClick={() => setMode(null)}>
                 Cancel
               </button>
             </div>
-            <div className="help" style={{ marginTop: 8, fontSize: 12 }}>
-              Trouble logging in? Make sure you confirmed your email.
-            </div>
+            <div className="help">Trouble logging in? Make sure you confirmed your email.</div>
           </form>
         )}
 
         {mode === 'signup' && (
-          <form className="form" onSubmit={signup}>
+          <form className="form" onSubmit={signUp}>
             <input
               className="input"
               type="email"
               placeholder="Email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              required
             />
             <input
               className="input"
@@ -153,32 +128,25 @@ export default function Home() {
               placeholder="Create a password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              required
             />
-            <div style={{ display: 'flex', gap: 8, marginTop: 12 }}>
+            <div className="row">
               <button className="btn btnPrimary" type="submit">
                 Create Account
               </button>
-              <button
-                className="btn"
-                type="button"
-                onClick={() => setMode(null)}
-              >
+              <button className="btn" type="button" onClick={() => setMode(null)}>
                 Cancel
               </button>
             </div>
-            <div className="help" style={{ marginTop: 8, fontSize: 12 }}>
-              You&apos;ll receive a confirmation email to activate your account.
+            <div className="help">
+              You’ll receive a confirmation email to activate your account.
             </div>
           </form>
         )}
 
         {mode === 'demo' && (
-          <div style={{ marginTop: 12, fontSize: 14 }}>
-            <div className="help" style={{ marginBottom: 8 }}>
-              Demo mode will preview the dashboards and games UI without saving data.
-            </div>
-            <div style={{ display: 'flex', gap: 8 }}>
+          <div className="help">
+            Demo mode will preview the dashboards and games UI without saving data.
+            <div className="row" style={{ marginTop: 10 }}>
               <a className="btn btnPrimary" href="/dashboard">
                 Open Demo
               </a>
@@ -190,17 +158,15 @@ export default function Home() {
         )}
 
         {msg && (
-          <p
-            style={{
-              marginTop: 12,
-              fontSize: 13,
-              color: '#49c6ff',
-            }}
-          >
+          <p className="help" style={{ color: '#89c6ff' }}>
             {msg}
           </p>
         )}
+
+        <div className="footer">
+          © {new Date().getFullYear()} NexLive™ • All rights reserved
+        </div>
       </div>
-    </main>
+    </div>
   );
 }

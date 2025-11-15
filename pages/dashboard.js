@@ -1,161 +1,133 @@
+// pages/dashboard.js
+
 import { useEffect, useState } from 'react';
-import { supabase } from '../lib/supabaseClient'
+import { supabase } from '../lib/supabaseClient';
 
 export default function Dashboard() {
-  const [user, setUser] = useState(null);
+  const [userEmail, setUserEmail] = useState('');
+  const [demoMode, setDemoMode] = useState(true);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    const checkSession = async () => {
-      const { data, error } = await supabase.auth.getSession();
+  // Demo numbers for now
+  const [coins, setCoins] = useState(250);
+  const [goldenTickets, setGoldenTickets] = useState(2);
+  const [passportXP, setPassportXP] = useState(1200);
 
-      if (error || !data?.session) {
-        // Not logged in – send back to login
-        window.location.href = '/login';
-        return;
+  useEffect(() => {
+    // Try to load logged-in user
+    const loadUser = async () => {
+      const {
+        data: { user },
+        error,
+      } = await supabase.auth.getUser();
+
+      if (!error && user) {
+        setUserEmail(user.email || '');
+        setDemoMode(false);
+      } else {
+        // No user → treat as demo dashboard
+        setDemoMode(true);
       }
 
-      setUser(data.session.user);
       setLoading(false);
     };
 
-    checkSession();
+    loadUser();
   }, []);
 
   if (loading) {
     return (
-      <main
-        style={{
-          minHeight: '100vh',
-          display: 'grid',
-          placeItems: 'center',
-          background: '#05060a',
-          color: '#ffffff',
-        }}
-      >
-        <p style={{ opacity: 0.8 }}>Loading your NexLive dashboard…</p>
-      </main>
+      <div className="center">
+        <div className="card">
+          <h1 className="h1">NexLive™ Dashboard</h1>
+          <p className="sub">Loading your dashboard…</p>
+        </div>
+      </div>
     );
   }
 
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
+    window.location.href = '/';
+  };
+
   return (
-    <main
-      style={{
-        minHeight: '100vh',
-        display: 'grid',
-        placeItems: 'center',
-        background: '#05060a',
-        color: '#ffffff',
-        fontFamily:
-          'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif',
-      }}
-    >
-      <div
-        style={{
-          padding: '28px 32px',
-          borderRadius: '18px',
-          background: 'radial-gradient(circle at top, #101524 0, #05060a 55%)',
-          boxShadow: '0 18px 40px rgba(0,0,0,0.75)',
-          maxWidth: '640px',
-          width: '100%',
-          border: '1px solid rgba(148, 208, 255, 0.15)',
-        }}
-      >
-        <h1
-          style={{
-            fontSize: '24px',
-            marginBottom: '6px',
-            letterSpacing: '0.1em',
-            textTransform: 'uppercase',
-            color: '#9ad0ff',
-          }}
-        >
-          NexLive™ Fan Dashboard
-        </h1>
-
-        <p style={{ fontSize: '13px', opacity: 0.85, marginBottom: '16px' }}>
-          Welcome, <strong>{user?.email}</strong>
-        </p>
-
-        <p style={{ fontSize: '14px', marginBottom: '20px', lineHeight: 1.6 }}>
-          Play games, earn coins, and get ready for Golden Tickets, Fan
-          Passport XP, and live meetups.
-        </p>
-
-        <div
-          style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))',
-            gap: '14px',
-            marginBottom: '20px',
-          }}
-        >
-          <a
-            href="/games/highlow"
-            style={cardStyle}
-          >
-            <h2 style={cardTitleStyle}>High / Low</h2>
-            <p style={cardTextStyle}>Guess and win more NexCoins.</p>
-          </a>
-
-          <a
-            href="/games/whack"
-            style={cardStyle}
-          >
-            <h2 style={cardTitleStyle}>Whack Game</h2>
-            <p style={cardTextStyle}>Fast tap action, higher scores.</p>
-          </a>
-
-          <div style={cardStyle}>
-            <h2 style={cardTitleStyle}>Wish Button</h2>
-            <p style={cardTextStyle}>
-              Soon: spend coins to request your favorite creators.
-            </p>
-          </div>
+    <div className="dashboard">
+      <header className="dashHeader">
+        <div>
+          <h1 className="h1">NexLive™ Dashboard</h1>
+          <p className="sub">
+            {demoMode
+              ? 'Demo mode – preview of the fan experience.'
+              : `Signed in as ${userEmail}`}
+          </p>
         </div>
 
-        <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '12px', opacity: 0.7 }}>
-          <span>Phase 1 • Prototype</span>
+        {!demoMode && (
+          <button className="btn" onClick={handleLogout}>
+            Log Out
+          </button>
+        )}
+      </header>
+
+      <section className="statsRow">
+        <div className="statCard">
+          <h2>Coins</h2>
+          <p className="bigNumber">{coins}</p>
+          <p className="smallText">Use coins to send Wishes & enter events.</p>
           <button
-            type="button"
-            onClick={async () => {
-              await supabase.auth.signOut();
-              window.location.href = '/';
-            }}
-            style={{
-              background: 'transparent',
-              border: '1px solid rgba(255,255,255,0.5)',
-              borderRadius: '999px',
-              padding: '4px 10px',
-              color: '#ffffff',
-              fontSize: '11px',
-              cursor: 'pointer',
-            }}
+            className="btn btnPrimary"
+            onClick={() => setCoins((c) => c + 20)}
           >
-            Log out
+            +20 Coins (demo)
           </button>
         </div>
-      </div>
-    </main>
+
+        <div className="statCard">
+          <h2>Golden Tickets</h2>
+          <p className="bigNumber">{goldenTickets}</p>
+          <p className="smallText">
+            VIP entries for live meet-and-greets and special events.
+          </p>
+        </div>
+
+        <div className="statCard">
+          <h2>Passport XP</h2>
+          <p className="bigNumber">{passportXP}</p>
+          <p className="smallText">
+            Your NexLive™ level. Higher XP = better perks.
+          </p>
+        </div>
+      </section>
+
+      <section className="panelRow">
+        <div className="panel">
+          <h2>Wish Button</h2>
+          <p className="smallText">
+            Request live moments with your favorite stars – Q&amp;A, shoutouts,
+            meetups and more.
+          </p>
+          <button className="btn btnPrimary">Open Wish Panel (coming soon)</button>
+        </div>
+
+        <div className="panel">
+          <h2>Fan Dashboard</h2>
+          <p className="smallText">
+            See your full fan profile, history, and market activity.
+          </p>
+          <a className="btn" href="/fan_dashboard">
+            Go to Fan Dashboard
+          </a>
+        </div>
+
+        <div className="panel">
+          <h2>Marketplace</h2>
+          <p className="smallText">
+            Buy & sell fan merch, collectibles and creator drops.
+          </p>
+          <button className="btn">Explore Marketplace (demo)</button>
+        </div>
+      </section>
+    </div>
   );
 }
-
-// Small inline style helpers
-const cardStyle = {
-  padding: '14px 16px',
-  borderRadius: '14px',
-  background: 'rgba(10, 16, 32, 0.95)',
-  border: '1px solid rgba(148, 208, 255, 0.18)',
-  textDecoration: 'none',
-  color: '#ffffff',
-};
-
-const cardTitleStyle = {
-  fontSize: '15px',
-  marginBottom: '4px',
-};
-
-const cardTextStyle = {
-  fontSize: '12px',
-  opacity: 0.8,
-};
